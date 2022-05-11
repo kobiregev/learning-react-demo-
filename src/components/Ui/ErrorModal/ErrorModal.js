@@ -1,5 +1,5 @@
 import React from "react";
-import { ReactDOM } from "react";
+import ReactDOM from "react-dom";
 
 import Button from "../Button/Button";
 import Card from "../Card/Card";
