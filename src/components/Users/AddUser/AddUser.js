@@ -1,29 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Button from "../../Ui/Button/Button";
 import Card from "../../Ui/Card/Card";
 import ErrorModal from "../../Ui/ErrorModal/ErrorModal";
 import styles from "./AddUser.module.css";
 
 const AddUser = ({ onAddUser }) => {
-  const [username, setUsername] = useState("");
-  const [age, setAge] = useState("");
+  const usernameInputRef = useRef();
+  const ageInputRef = useRef();
+
   const [error, setError] = useState(null);
-
-  const usernameChangeHandler = (e) => {
-    setUsername(e.target.value);
-  };
-
-  const ageChangeHandler = (e) => {
-    setAge(e.target.value);
-  };
-
   const errorHandler = () => setError(null);
 
   const formSubmitHandler = (e) => {
     e.preventDefault();
-
+    const enteredUsername = usernameInputRef.current.value;
+    const enteredAge = ageInputRef.current.value;
     //
-    if (!username.trim() || +age < 1) {
+    if (!enteredUsername.trim() || +enteredAge < 1) {
       setError({
         title: "Invalid input",
         message: "Please enter a valid name and age (non-empty values).",
@@ -32,17 +25,23 @@ const AddUser = ({ onAddUser }) => {
     }
 
     // Pass added user to parent component
-    onAddUser({ username, age });
+    onAddUser({ username: enteredUsername, age: enteredAge });
 
     // Clear inputs after submit and error state.
-    setUsername("");
-    setAge("");
+    usernameInputRef.current.value = "";
+    ageInputRef.current.value = "";
     errorHandler();
   };
 
   return (
     <>
-      {error && <ErrorModal title={error?.title} message={error?.message} onConfirm={errorHandler} />}
+      {error && (
+        <ErrorModal
+          title={error?.title}
+          message={error?.message}
+          onConfirm={errorHandler}
+        />
+      )}
       <Card className={styles.container}>
         <form className={styles.form} onSubmit={formSubmitHandler}>
           <div className={styles.input_container}>
@@ -51,19 +50,12 @@ const AddUser = ({ onAddUser }) => {
               id="username"
               type="text"
               placeholder="Username"
-              value={username}
-              onChange={usernameChangeHandler}
+              ref={usernameInputRef}
             />
           </div>
           <div className={styles.input_container}>
             <label htmlFor="age">Age</label>
-            <input
-              id="age"
-              type="number"
-              placeholder="Age"
-              value={age}
-              onChange={ageChangeHandler}
-            />
+            <input id="age" type="number" placeholder="Age" ref={ageInputRef} />
           </div>
           <Button type="submit">Add User</Button>
         </form>
